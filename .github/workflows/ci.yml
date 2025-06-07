@@ -1,0 +1,28 @@
+name: Python CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # main 브랜치에 푸시될 때마다 실행
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 우분투 환경에서 실행
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2  # 코드를 체크아웃합니다.
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'  # Python 3.9 버전 설정
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  # requirements.txt에 명시된 패키지 설치
+
+      - name: Run tests
+        run: |
+          pytest  # pytest를 사용하여 자동화된 테스트 실행

@@ -1,0 +1,28 @@
+name: Deploy App
+
+on:
+  push:
+    branches:
+      - main  # main 브랜치에 푸시될 때마다 실행
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2  # 소스 코드 체크아웃
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'  # 사용할 Python 버전
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  # 필요한 의존성 설치
+    - name: Run tests
+      run: |
+        python -m unittest discover  # 테스트 실행
+    - name: Deploy to production
+      run: |
+        # 배포 명령어 예시
+        ssh user@yourserver "cd /path/to/your/app && git pull && systemctl restart your-app-service"

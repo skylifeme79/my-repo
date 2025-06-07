@@ -1,0 +1,25 @@
+def fetch_data_with_retry(ticker, retries=3, delay=2):
+    import time
+    import pyupbit
+    import numpy as np
+
+    for attempt in range(retries):
+        try:
+            df = pyupbit.get_ohlcv(ticker, interval="day", count=50)
+            if df is not None and len(df) > 0:
+                # 이동 평균 계산 (5일, 20일)
+                df['MA5'] = df['close'].rolling(window=5).mean()
+                df['MA20'] = df['close'].rolling(window=20).mean()
+                
+                # NaN 값 처리
+                df['MA5'].fillna(0, inplace=True)
+                df['MA20'].fillna(0, inplace=True)
+                
+                return df  # 데이터가 정상적으로 반환되면 데이터프레임 반환
+        except Exception as e:
+            print(f"Error fetching {ticker} (attempt {attempt + 1}/{retries}): {e}")
+        
+        time.sleep(delay)  # 재시도 대기 시간 설정
+
+    print(f"[SKIP] {ticker} - No data after {retries} retries.")
+    return None  # 모든 재시도 후에도 실패하면 None 반환

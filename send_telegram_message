@@ -1,0 +1,13 @@
+import telegram
+
+# 텔레그램 봇 토큰과 채팅 ID 설정
+token = '7689237259:AAHSaJaFgmTGvBLbT3ysT0ULL_irtxFVDs4'
+chat_id = '1895169625'
+bot = telegram.Bot(token=token)
+
+# 텔레그램 메시지 보내는 함수
+def send_telegram_message(message):
+    bot.send_message(chat_id=chat_id, text=message)
+
+# 예시 한글 메시지 보내기
+send_telegram_message("안녕하세요! 실시간 거래 시스템이 작동 중입니다.")

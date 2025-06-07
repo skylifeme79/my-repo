@@ -1,8 +1,7 @@
 import pyupbit
+import pandas as pd
 import time
 import logging
-import numpy as np
-import pandas as pd
 
 # 업비트 API 키 설정
 access_key = "Q1ic2RY6xpax3561HCfhyAfx3OC0nUtsLBd8Nxxh"  # 본인의 API Access Key 입력
@@ -55,7 +54,7 @@ def get_balance_retry(asset, max_retries=5):
 def get_current_price(ticker):
     return pyupbit.get_current_price(ticker)
 
-# 전략 성과 지표 계산
+# 전략 성과 지표 계산 (위에서 설명한 대로)
 def evaluate_strategies():
     strategies = ['PPO', 'SAC', 'Hybrid']
     results = {
@@ -110,6 +109,12 @@ def auto_trade():
     buy_price_threshold = 145000000  # 매수 기준 (145,000,000 KRW)
     sell_price_threshold = 150000000  # 매도 기준 (150,000,000 KRW)
 
+    # 매수 금액 자동화: KRW 잔고의 10%를 매수
+    def calculate_buy_amount():
+        balance_krw = check_balance()
+        buy_amount = balance_krw * 0.10  # 예: KRW 잔고의 10%를 매수
+        return buy_amount
+
     while True:
         current_price = get_current_price(ticker)
         print(f"현재 {ticker} 가격: {current_price} KRW")
@@ -117,18 +122,18 @@ def auto_trade():
 
         # 매도 조건: 가격이 150,000,000 KRW 이상일 경우 보유한 비트코인을 매도
         balance_btc = get_balance_retry("BTC")  # BTC 잔고 확인 (재시도)
-        
+
         if balance_btc > 0.001:  # BTC 잔고가 있는 경우
             if current_price >= sell_price_threshold:
                 sell(ticker, balance_btc)  # BTC 매도
             else:
-                print(f"현재 가격이 매도 기준을 넘지 않았습니다. 가격: {current_price} KRW, 매도 기준: {sell_price_threshold} KRW")
+                print(f"현재 가격이 매도 기준을 넘지 않았습니다. 가격: {current_price} KRW, 매도 기준: {sell_price_threshold}")
 
-        # 매수 조건: 가격이 145,000,000 KRW 이하일 경우 10,000 KRW 매수
+        # 매수 조건: 가격이 145,000,000 KRW 이하일 경우, KRW 잔고의 10%만큼 매수
         elif current_price <= buy_price_threshold:
-            balance_krw = check_balance()
-            if balance_krw >= 10000:  # 최소 금액 이상일 경우
-                buy(ticker, 10000)  # 10,000 KRW 매수
+            buy_amount = calculate_buy_amount()
+            if buy_amount >= 10000:  # 최소 금액 이상일 경우
+                buy(ticker, buy_amount)  # 자동으로 계산된 매수 금액
             else:
                 print("KRW 잔고가 부족하여 매수할 수 없습니다.")
 

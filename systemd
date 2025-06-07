@@ -1,0 +1,16 @@
+[Unit]
+Description=Upbit Auto Trade System
+After=network.target
+
+[Service]
+# 가상환경 내의 python을 사용
+ExecStart=/home/ysj1690/newenv/bin/python /home/ysj1690/FinRL/upbit_auto_trade_strategy.py
+WorkingDirectory=/home/ysj1690/FinRL
+Environment="PATH=/home/ysj1690/newenv/bin:$PATH"
+User=ysj1690
+Group=ysj1690
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
